@@ -1,6 +1,6 @@
 ﻿# IoT Lab – Embedded Systems Experiments (8051 and STM32)
 
-Lab experiments for **25CS2741 Fundamentals of Internet of Things + Lab** (B.Tech CSE (IoT), Semester 3, Shiv Nadar University Chennai) – Register No. **25011102060**.
+Lab experiments for **25CS2741 Fundamentals of Internet of Things + Lab** (B.Tech CSE (IoT), Semester 3, Shiv Nadar University Chennai) – Register No. **25011102060 - Naga Dharsan N**.
 
 The experiments start with bare-metal register programming on the 8051 (GPIO, keypad, timers, UART, LCD), move to STM32 microcontrollers with STM32CubeMX and the HAL library, and finish with networked sensing: an STM32 reads a BME280 sensor and serves or publishes the data over Wi-Fi through an ESP8266, using HTTP and MQTT, with Node-RED dashboards.
 
