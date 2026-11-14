@@ -1,0 +1,23 @@
+﻿{
+    "configurations": [
+        {
+            "name": "CAT14_STM32F103C8T6",
+            "includePath": [
+                "${workspaceFolder}/STM32/CAT14/TASK14/Core/Inc",
+                "${workspaceFolder}/STM32/CAT14/TASK14/Drivers/STM32F1xx_HAL_Driver/Inc",
+                "${workspaceFolder}/STM32/CAT14/TASK14/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
+                "${workspaceFolder}/STM32/CAT14/TASK14/Drivers/CMSIS/Include",
+                "${workspaceFolder}/STM32/CAT14/TASK14/Drivers/CMSIS/Core/Include"
+            ],
+            "defines": [
+                "USE_HAL_DRIVER",
+                "STM32F103xB"
+            ],
+            "compilerPath": "",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

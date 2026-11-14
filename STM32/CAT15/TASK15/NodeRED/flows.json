@@ -1,0 +1,351 @@
+[
+    {
+        "id": "bcaee8e75d85b604",
+        "type": "tab",
+        "label": "AGROSENSE",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "eee32ee2f36e5593",
+        "type": "inject",
+        "z": "bcaee8e75d85b604",
+        "name": "Local BME280: every 15 s",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "1",
+        "topic": "local",
+        "payload": "",
+        "payloadType": "date",
+        "x": 280,
+        "y": 280,
+        "wires": [
+            [
+                "28d403f0ed811bc7"
+            ]
+        ]
+    },
+    {
+        "id": "28d403f0ed811bc7",
+        "type": "http request",
+        "z": "bcaee8e75d85b604",
+        "name": "GET STM32 HTML — EDIT IP",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://10.121.18.77/",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 560,
+        "y": 220,
+        "wires": [
+            [
+                "7654612e37e71b15"
+            ]
+        ]
+    },
+    {
+        "id": "7654612e37e71b15",
+        "type": "function",
+        "z": "bcaee8e75d85b604",
+        "name": "Parse HTML → local sensor",
+        "func": "// Browser page returned by your current STM32 firmware is HTML, not JSON.\n// Extract ONLY values from the three labeled <p> fields.\nif (msg.statusCode !== 200) { node.warn('STM32 HTTP status: '+msg.statusCode); return null; }\nconst html = String(msg.payload || '');\n// Simpler robust patterns allowing markup after labels.\nconst t = html.match(/Temperature:\\s*(-?\\d+(?:\\.\\d+)?)/i);\nconst p = html.match(/Pressure:\\s*(-?\\d+(?:\\.\\d+)?)/i);\nconst h = html.match(/Humidity:\\s*(-?\\d+(?:\\.\\d+)?)/i);\nif (!t || !p || !h) { node.warn('Could not parse sensor HTML. Check if sensor is unavailable and print msg.payload to debug.'); return null; }\nconst obj={temp:Number(t[1]), pressure:Number(p[1]), humidity:Number(h[1]), at:Date.now(), source:'BME280'};\nif (!Number.isFinite(obj.temp)||!Number.isFinite(obj.pressure)||!Number.isFinite(obj.humidity)) return null;\nmsg.payload=obj; msg.topic='local'; return msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 240,
+        "wires": [
+            [
+                "d32c8e468df65ed4",
+                "659b3984309f10ea"
+            ]
+        ]
+    },
+    {
+        "id": "5ce3e6e27209da6a",
+        "type": "inject",
+        "z": "bcaee8e75d85b604",
+        "name": "OpenWeather: every 10 min",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "1",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "3",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 275,
+        "y": 430,
+        "wires": [
+            [
+                "f414e5e843031c86"
+            ]
+        ]
+    },
+    {
+        "id": "f414e5e843031c86",
+        "type": "function",
+        "z": "bcaee8e75d85b604",
+        "name": "API URL + KEY — EDIT THIS",
+        "func": "\nconst key = \"a76dcc4675c13fe0b91fe39fafa7419e\";\n\nmsg.url = \"https://api.openweathermap.org/data/2.5/weather\"\n        + \"?q=Chennai,IN\"\n        + \"&units=metric\"\n        + \"&appid=\" + encodeURIComponent(key);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 520,
+        "wires": [
+            [
+                "04ed8a792c1e4456"
+            ]
+        ]
+    },
+    {
+        "id": "04ed8a792c1e4456",
+        "type": "http request",
+        "z": "bcaee8e75d85b604",
+        "name": "GET OpenWeather JSON",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 760,
+        "y": 430,
+        "wires": [
+            [
+                "add3953154f3f46a"
+            ]
+        ]
+    },
+    {
+        "id": "add3953154f3f46a",
+        "type": "function",
+        "z": "bcaee8e75d85b604",
+        "name": "Parse API temperature/pressure/RH",
+        "func": "if (msg.statusCode!==200 || !msg.payload || !msg.payload.main) {\n node.warn('OpenWeather error HTTP '+msg.statusCode+': '+JSON.stringify(msg.payload)); return null;\n}\nconst m=msg.payload.main;\nmsg.payload={temp:Number(m.temp),humidity:Number(m.humidity),pressure:Number(m.pressure),at:Date.now(),source:'OpenWeather',location:msg.payload.name||'Configured city'};\nmsg.topic='api';return msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 520,
+        "wires": [
+            [
+                "d32c8e468df65ed4",
+                "b3a4341b1cb84c80"
+            ]
+        ]
+    },
+    {
+        "id": "d32c8e468df65ed4",
+        "type": "function",
+        "z": "bcaee8e75d85b604",
+        "name": "AgroSense Unified Microclimate Analysis",
+        "func": "\nconst p = msg.payload || {};\nconst now = Date.now();\n\n// Store the latest reading from each source.\nif (msg.topic === \"local\") {\n  flow.set(\"agro_local\", {\n    ...p,\n    receivedAt: now\n  });\n}\n\nif (msg.topic === \"api\") {\n  flow.set(\"agro_api\", {\n    ...p,\n    receivedAt: now\n  });\n}\n\nconst local = flow.get(\"agro_local\");\nconst api = flow.get(\"agro_api\");\n\n// Validate sensor values.\nconst valid = d => {\n  if (!d) return false;\n\n  const t = Number(d.temp);\n  const h = Number(d.humidity);\n  const pr = Number(d.pressure);\n\n  return Number.isFinite(t) &&\n    Number.isFinite(h) &&\n    Number.isFinite(pr) &&\n    t >= -20 && t <= 60 &&\n    h >= 0 && h <= 100 &&\n    pr >= 850 && pr <= 1100;\n};\n\n// Check freshness using Node-RED reception time.\nconst fresh = (d, limit) =>\n  d &&\n  Number.isFinite(Number(d.receivedAt)) &&\n  now - Number(d.receivedAt) >= 0 &&\n  now - Number(d.receivedAt) < limit;\n\nconst localOK = valid(local) && fresh(local, 2 * 60 * 1000);\nconst apiOK = valid(api) && fresh(api, 25 * 60 * 1000);\n\nconst output = {\n  ready: localOK || apiOK,\n  local: localOK ? local : null,\n  api: apiOK ? api : null,\n  index: null,\n  category: \"Waiting for valid data\",\n  source: \"No valid source\",\n  agreement: null,\n  delta: null,\n  indicators: [],\n  advisories: [],\n  warnings: [],\n  note: \"Universal rule-based environmental assessment using ambient temperature, humidity and atmospheric pressure. Not a crop yield or irrigation prediction.\"\n};\n\nif (!localOK)\n  output.warnings.push(\n    \"Local BME280 data unavailable, invalid or outdated.\"\n  );\n\nif (!apiOK)\n  output.warnings.push(\n    \"OpenWeather data unavailable, invalid or outdated.\"\n  );\n\nif (!output.ready) {\n  msg.payload = output;\n  return msg;\n}\n\n// Use both sources when available.\n// Give greater importance to hyperlocal sensor readings.\nconst bothAvailable = localOK && apiOK;\n\nconst weightLocal = bothAvailable ? 0.65 : localOK ? 1 : 0;\nconst weightAPI = bothAvailable ? 0.35 : apiOK ? 1 : 0;\n\nconst chosen = localOK ? local : api;\n\nconst t = weightLocal * Number(localOK ? local.temp : 0) +\n  weightAPI * Number(apiOK ? api.temp : 0);\n\nconst h = weightLocal * Number(localOK ? local.humidity : 0) +\n  weightAPI * Number(apiOK ? api.humidity : 0);\n\nconst pressure = weightLocal * Number(localOK ? local.pressure : 0) +\n  weightAPI * Number(apiOK ? api.pressure : 0);\n\nconst clamp = (n, min = 0, max = 100) =>\n  Math.max(min, Math.min(max, n));\n\n// Universal environmental suitability heuristic.\nconst tempScore = clamp(\n  100 -\n  Math.max(0, t - 30) * 5 -\n  Math.max(0, 15 - t) * 3\n);\n\nconst humidityScore = clamp(\n  100 -\n  Math.max(0, h - 80) * 2 -\n  Math.max(0, 30 - h) * 1.5\n);\n\n// Atmospheric pressure is informational in this model.\n// It is not treated as a direct crop-health measurement.\nconst environmentalScore =\n  0.60 * tempScore +\n  0.40 * humidityScore;\n\n// Compare the two sources when both are available.\nif (bothAvailable) {\n  const dt = Math.abs(Number(local.temp) - Number(api.temp));\n  const dh = Math.abs(Number(local.humidity) - Number(api.humidity));\n  const dp = Math.abs(Number(local.pressure) - Number(api.pressure));\n\n  output.delta = {\n    temp: Number(dt.toFixed(2)),\n    humidity: Number(dh.toFixed(2)),\n    pressure: Number(dp.toFixed(2))\n  };\n\n  output.agreement = Math.round(clamp(\n    100 - Math.min(60, dt * 10) -\n    Math.min(40, dh * 1.2)\n  ));\n\n  if (dt > 4 || dh > 15)\n    output.warnings.push(\n      \"Local microclimate differs noticeably from city-level weather data. Check sensor placement and surrounding conditions.\"\n    );\n\n  if (dp > 8)\n    output.warnings.push(\n      \"Pressure readings differ noticeably. Verify sensor calibration and measurement conditions.\"\n    );\n}\n\n// Apply a modest consistency adjustment when both sources work.\nconst reliabilityFactor = bothAvailable\n  ? 0.85 + 0.15 * output.agreement / 100\n  : 1;\n\noutput.index = Math.round(\n  clamp(environmentalScore * reliabilityFactor)\n);\n\noutput.category =\n  output.index >= 95 ? \"Favorable\" :\n    output.index >= 93 ? \"Generally Suitable\" :\n      output.index >= 91 ? \"Use Caution\" :\n        \"Unfavorable\";\n\noutput.source = bothAvailable\n  ? \"BME280 + OpenWeather\"\n  : localOK ? \"Local BME280\" : \"OpenWeather\";\n\n// Environmental indicators.\noutput.indicators.push({\n  title: \"🌡️ Temperature\",\n  level: t > 35 ? \"High\" :\n    t > 30 ? \"Elevated\" :\n      t < 15 ? \"Low\" : \"Moderate\",\n  detail: `Combined temperature reading: ${t.toFixed(2)} °C.`\n});\n\noutput.indicators.push({\n  title: \"💧 Atmospheric Humidity\",\n  level: h > 85 ? \"Very High\" :\n    h > 80 ? \"High\" :\n      h < 30 ? \"Low\" : \"Moderate\",\n  detail: `Combined relative humidity: ${h.toFixed(2)}%.`\n});\n\noutput.indicators.push({\n  title: \"🧭 Atmospheric Pressure\",\n  level: pressure < 1000 ? \"Low\" :\n    pressure > 1025 ? \"High\" : \"Normal\",\n  detail: `Combined atmospheric pressure: ${pressure.toFixed(2)} hPa.`\n});\n\noutput.indicators.push({\n  title: \"📡 Data Consistency\",\n  level: !bothAvailable ? \"Single Source\" :\n    output.agreement >= 80 ? \"Strong\" :\n      output.agreement >= 50 ? \"Moderate\" : \"Low\",\n  detail: bothAvailable\n    ? `Source agreement: ${output.agreement}/100.`\n    : \"Only one valid data source is currently available.\"\n});\n\n// Smart field advisories.\nif (t > 29)\n  output.advisories.push(\n    \"High ambient temperature detected. Monitor field heat conditions and potential plant water stress.\"\n  );\nelse if (t > 27)\n  output.advisories.push(\n    \"Warm environmental conditions detected. Monitor field temperature changes.\"\n  );\nelse if (t < 25)\n  output.advisories.push(\n    \"Low ambient temperature detected. Monitor temperature-sensitive field conditions.\"\n  );\n\nif (h > 85)\n  output.advisories.push(\n    \"Very high humidity detected. Monitor leaf wetness and conditions favorable to fungal diseases.\"\n  );\nelse if (h > 80)\n  output.advisories.push(\n    \"High humidity detected. Monitor prolonged moisture exposure in the field.\"\n  );\nelse if (h < 30)\n  output.advisories.push(\n    \"Low atmospheric humidity detected. Monitor soil moisture separately; air humidity alone cannot determine irrigation requirements.\"\n  );\n\nif (bothAvailable && output.agreement < 70)\n  output.advisories.push(\n    \"Check local sensor placement and compare readings with nearby environmental conditions.\"\n  );\n\nif (output.advisories.length === 0)\n  output.advisories.push(\n    \"No major temperature or humidity warning detected under the current assessment rules. Continue routine field monitoring.\"\n  );\n\noutput.advisories.push(\n  \"Check rainfall forecasts, wind conditions and soil moisture before irrigation, spraying or other weather-sensitive operations.\"\n);\n\nmsg.payload = output;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1410,
+        "y": 280,
+        "wires": [
+            [
+                "ef47ffe689c6c7ab"
+            ]
+        ]
+    },
+    {
+        "id": "659b3984309f10ea",
+        "type": "debug",
+        "z": "bcaee8e75d85b604",
+        "name": "Sensor parsed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "b3a4341b1cb84c80",
+        "type": "debug",
+        "z": "bcaee8e75d85b604",
+        "name": "OpenWeather parsed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1390,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "ef47ffe689c6c7ab",
+        "type": "ui-template",
+        "z": "bcaee8e75d85b604",
+        "group": "742a521118492c5c",
+        "page": "",
+        "ui": "",
+        "name": "AGRO comparison dashboard",
+        "order": 1,
+        "width": 12,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n  <div class=\"agro-wrap\">\n    <div class=\"agro-header\">\n      <div>\n        <h1>🌱 AgroSense</h1>\n        <p>Universal Agricultural Microclimate Advisor</p>\n        <small>Hyperlocal IoT sensing + OpenWeather intelligence</small>\n      </div>\n      <div class=\"agro-live\">● LIVE MONITORING</div>\n    </div>\n\n    <div class=\"agro-grid\">\n      <div class=\"agro-card\">\n        <h3>📡 Local Field Sensor</h3>\n\n        <template v-if=\"msg?.payload?.local\">\n          <div>🌡️ Temperature:\n            <b>{{ Number(msg.payload.local.temp).toFixed(2) }} °C</b>\n          </div>\n          <div>💧 Humidity:\n            <b>{{ Number(msg.payload.local.humidity).toFixed(2) }} %</b>\n          </div>\n          <div>🧭 Pressure:\n            <b>{{ Number(msg.payload.local.pressure).toFixed(2) }} hPa</b>\n          </div>\n          <span class=\"agro-tag\">BME280 · Connected</span>\n        </template>\n\n        <p v-else>Waiting for valid BME280 readings...</p>\n      </div>\n\n      <div class=\"agro-card\">\n        <h3>☁️ OpenWeather Reference</h3>\n\n        <template v-if=\"msg?.payload?.api\">\n          <div>🌡️ Temperature:\n            <b>{{ Number(msg.payload.api.temp).toFixed(2) }} °C</b>\n          </div>\n          <div>💧 Humidity:\n            <b>{{ Number(msg.payload.api.humidity).toFixed(2) }} %</b>\n          </div>\n          <div>🧭 Pressure:\n            <b>{{ Number(msg.payload.api.pressure).toFixed(2) }} hPa</b>\n          </div>\n          <span class=\"agro-tag\">Weather API · Connected</span>\n        </template>\n\n        <p v-else>Waiting for OpenWeather readings...</p>\n      </div>\n    </div>\n\n    <template v-if=\"msg?.payload?.ready\">\n      <div class=\"agro-score\">\n        <h3>🌿 Agricultural Microclimate Readiness</h3>\n\n        <div class=\"agro-number\">\n          {{ msg.payload.index }}<span>/100</span>\n        </div>\n\n        <h2>{{ msg.payload.category }}</h2>\n\n        <div class=\"agro-progress\">\n          <div :style=\"{ width: msg.payload.index + '%' }\"></div>\n        </div>\n\n        <small>Assessment based on: {{ msg.payload.source }}</small>\n      </div>\n\n      <h2 class=\"agro-section\">🔬 Environmental Indicators</h2>\n\n      <div class=\"agro-grid\">\n        <div class=\"agro-card\" v-for=\"(item, i) in msg.payload.indicators\" :key=\"i\">\n          <h3>{{ item.title }}</h3>\n          <span class=\"agro-tag\">{{ item.level }}</span>\n          <p>{{ item.detail }}</p>\n        </div>\n      </div>\n\n      <div class=\"agro-advice\">\n        <h2>💡 Smart Field Advisory</h2>\n\n        <div v-for=\"(advice, i) in msg.payload.advisories\" :key=\"i\" class=\"agro-advice-item\">\n          ✅ {{ advice }}\n        </div>\n      </div>\n\n      <div class=\"agro-quality\">\n        <h2>📊 Data Consistency</h2>\n\n        <template v-if=\"msg.payload.agreement !== null\">\n          <h3>{{ msg.payload.agreement }}/100</h3>\n\n          <p>Temperature difference:\n            {{ msg.payload.delta.temp }} °C\n          </p>\n\n          <p>Humidity difference:\n            {{ msg.payload.delta.humidity }} %\n          </p>\n\n          <p>Pressure difference:\n            {{ msg.payload.delta.pressure }} hPa\n          </p>\n        </template>\n\n        <p v-else>\n          Only one valid source is currently available.\n          Source comparison will appear when both are online.\n        </p>\n      </div>\n\n      <div class=\"agro-warning\" v-if=\"msg.payload.warnings?.length\">\n        <h3>⚠️ Sensor & Data Reliability Alerts</h3>\n\n        <p v-for=\"(warning, i) in msg.payload.warnings\" :key=\"i\">\n          • {{ warning }}\n        </p>\n      </div>\n\n      <p class=\"agro-footer\">\n        {{ msg.payload.note }}\n        The readiness score is a rule-based environmental indicator,\n        not a calibrated crop-growth, yield, rainfall or irrigation prediction.\n      </p>\n    </template>\n\n    <div v-else class=\"agro-wait\">\n      ⏳ Waiting for valid environmental readings...\n\n      <p v-for=\"(warning, i) in msg?.payload?.warnings || []\" :key=\"i\">\n        {{ warning }}\n      </p>\n    </div>\n  </div>\n</template>\n\n<style>\n  .agro-wrap {\n    font-family: Arial, sans-serif;\n    padding: 20px;\n    color: #203a2b;\n    width: 100%;\n    box-sizing: border-box;\n  }\n\n  .agro-header {\n    background: linear-gradient(120deg, #145b3d, #2f9063);\n    color: white;\n    border-radius: 16px;\n    padding: 25px;\n    display: flex;\n    justify-content: space-between;\n    align-items: center;\n    gap: 12px;\n    flex-wrap: wrap;\n  }\n\n  .agro-header h1 {\n    font-size: 32px;\n    margin: 0 0 8px;\n  }\n\n  .agro-header p {\n    margin: 0 0 8px;\n  }\n\n  .agro-header small {\n    opacity: .85;\n  }\n\n  .agro-live {\n    background: rgba(255, 255, 255, .2);\n    border-radius: 20px;\n    padding: 9px 14px;\n    font-size: 12px;\n    font-weight: bold;\n  }\n\n  .agro-grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));\n    gap: 16px;\n    margin-top: 18px;\n  }\n\n  .agro-card {\n    padding: 22px;\n    border-radius: 14px;\n    background: #edf6f0;\n    line-height: 2;\n    font-size: 16px;\n    border: 1px solid #d5eadd;\n  }\n\n  .agro-card h3 {\n    margin: 0 0 12px;\n    font-size: 18px;\n    color: #15583d;\n  }\n\n  .agro-score {\n    margin-top: 20px;\n    background: #e4f4e9;\n    border-radius: 16px;\n    padding: 25px;\n    text-align: center;\n  }\n\n  .agro-number {\n    font-size: 64px;\n    font-weight: 800;\n    color: #126d44;\n  }\n\n  .agro-number span {\n    font-size: 20px;\n    color: #6d8d78;\n  }\n\n  .agro-score h2 {\n    margin: 4px 0 18px;\n  }\n\n  .agro-progress {\n    background: #c6d7ca;\n    border-radius: 20px;\n    height: 14px;\n    overflow: hidden;\n    margin-bottom: 12px;\n  }\n\n  .agro-progress div {\n    background: #219d65;\n    height: 100%;\n    transition: width .4s;\n  }\n\n  .agro-section {\n    margin-top: 28px;\n    font-size: 22px;\n  }\n\n  .agro-tag {\n    display: inline-block;\n    background: #d5eadb;\n    color: #165b3c;\n    border-radius: 20px;\n    padding: 5px 12px;\n    font-size: 13px;\n    font-weight: bold;\n  }\n\n  .agro-advice {\n    background: #f1f8ec;\n    padding: 22px;\n    border-radius: 14px;\n    margin-top: 20px;\n  }\n\n  .agro-advice-item {\n    padding: 10px 0;\n    border-bottom: 1px solid #d9e8d4;\n    line-height: 1.6;\n  }\n\n  .agro-quality {\n    background: #edf3fa;\n    border-radius: 14px;\n    padding: 22px;\n    margin-top: 20px;\n  }\n\n  .agro-quality h3 {\n    font-size: 28px;\n    color: #285f91;\n    margin: 8px 0;\n  }\n\n  .agro-warning {\n    margin-top: 20px;\n    padding: 20px;\n    border-radius: 14px;\n    background: #fff3dd;\n    color: #8b520d;\n  }\n\n  .agro-warning p {\n    line-height: 1.6;\n  }\n\n  .agro-footer {\n    margin-top: 20px;\n    color: #66796b;\n    font-size: 12px;\n    line-height: 1.6;\n  }\n\n  .agro-wait {\n    margin-top: 20px;\n    padding: 25px;\n    border-radius: 12px;\n    background: #f1f5f2;\n    text-align: center;\n  }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 1740,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "742a521118492c5c",
+        "type": "ui-group",
+        "name": "Agricultural Microclimate Advisor",
+        "page": "07aff086e23d1fdb",
+        "width": "12",
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default",
+        "tab": ""
+    },
+    {
+        "id": "07aff086e23d1fdb",
+        "type": "ui-page",
+        "name": "AGROSENSE",
+        "ui": "32f8b6ccfb6e7ca2",
+        "path": "/agrosense",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "6ca27b4e3b582ab6",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "tabs": [],
+        "order": 6,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "32f8b6ccfb6e7ca2",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "6ca27b4e3b582ab6",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#fcfcfd",
+            "primary": "#0d74ce",
+            "bgPage": "#f9f9fb",
+            "groupBg": "#ffffff",
+            "groupOutline": "#d9d9e0"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "8976aa4e05dc5073",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.33.0"
+        }
+    }
+]

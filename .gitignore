@@ -1,0 +1,40 @@
+﻿# Keil temporary and generated files
+*.bak
+*.lst
+*.m51
+*.plg
+*.dep
+*.iex
+*.lnp
+*.build_log.htm
+*.uvgui*
+*.uvguix.*
+*.uvopt
+*.uvoptx
+
+# Compiler intermediate files
+*.obj
+*.o
+*.d
+*.crf
+*.map
+*.axf
+*.elf
+
+# STM32 generated build directories
+Debug/
+Release/
+Listings/
+
+# Temporary and operating system files
+*.tmp
+*.temp
+*.log
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Archives
+*.zip
+*.rar
+*.7z
