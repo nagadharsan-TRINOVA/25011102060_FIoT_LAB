@@ -2,7 +2,7 @@
 CAT 13
 
 ## DATE
-To be updated
+23/10/2026
 
 ## NAME OF EXP
 Sensor Interfacing(BME280) - STM32(Debug) - ESP8266(Wi-Fi) HTTP - Node Analytics
