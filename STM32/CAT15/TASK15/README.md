@@ -4,7 +4,7 @@
 CAT15
 
 ## DATE
-To be filled with the actual experiment/project date.
+12/11/2026
 
 ## NAME OF EXP
 AgroSense – IoT-Based Agricultural Microclimate Monitoring and Advisory System
