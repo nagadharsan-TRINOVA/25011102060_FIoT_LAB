@@ -37,7 +37,7 @@ See [CAT11 overall circuit diagram](../Circuit_Diagram_CAT11.png). The same hard
 
 The Wi-Fi SSID and password are placeholders in the packaged source. Set them locally before running.
 
-**Project files:** The complete STM32CubeMX/Keil project is preserved in `STM32_Project/`, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
+**Project files:** The complete STM32CubeMX/Keil project is preserved in this task folder, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
 
 The supplied source implements TCP server setup and serial forwarding; this task does not itself implement the HTTP request parser/HTML response.
 

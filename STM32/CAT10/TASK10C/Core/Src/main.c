@@ -98,7 +98,7 @@ int main(void)
         "AT+CWMODE=1\r\n";
 
     uint8_t WIFI[] =
-        "AT+CWJAP=\"SNUC\",\"snu12345\"\r\n";
+        "AT+CWJAP=\"YOUR_WIFI_SSID\",\"YOUR_WIFI_PASSWORD\"\r\n";
 
     uint8_t IP[] =
         "AT+CIFSR\r\n";

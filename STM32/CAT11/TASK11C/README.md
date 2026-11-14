@@ -32,7 +32,7 @@ The STM32 firmware and Node-RED flow are provided separately:
 - Configure the HTTP Request node URL as `http://<ESP8266_IP>/`, replacing the placeholder with the Wemos IP address shown by the module.
 - Deploy the flow, click Inject, and inspect the Debug sidebar for the response.
 
-**Project files:** The complete STM32CubeMX/Keil project is preserved in `STM32_Project/`, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
+**Project files:** The complete STM32CubeMX/Keil project is preserved in this task folder, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
 
 ## Node-RED Files
 See [`NodeRED/README.md`](NodeRED/README.md) for import, IP configuration and run instructions.

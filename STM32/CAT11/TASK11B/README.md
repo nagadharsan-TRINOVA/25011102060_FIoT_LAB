@@ -34,7 +34,7 @@ See [CAT11 overall circuit diagram](../Circuit_Diagram_CAT11.png). The same hard
 6. For a GET request, build a static HTTP `200 OK` response with `Content-Type`, `Content-Length`, and an HTML body.
 7. Send `AT+CIPSEND=<link_id>,<response_length>`, wait for the `>` prompt, transmit the response bytes, then close the connection.
 
-**Project files:** The complete STM32CubeMX/Keil project is preserved in `STM32_Project/`, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
+**Project files:** The complete STM32CubeMX/Keil project is preserved in this task folder, including the `.ioc` file, `Core/`, `Drivers/`, and `MDK-ARM/` project dependencies.
 
 The parser is a demonstration implementation based on the supplied source; do not interpret it as a general-purpose HTTP server stack.
 

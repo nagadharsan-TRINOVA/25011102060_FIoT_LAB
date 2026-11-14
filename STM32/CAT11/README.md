@@ -48,7 +48,7 @@ The diagram shows the overall hardware and network arrangement. Browser and Node
 ## Development Environment
 - MCU: STM32F103C8T6
 - Firmware framework: STM32 HAL
-- Configuration/project: STM32CubeMX `.ioc` and Keil MDK/µVision project under each task's `STM32_Project/`
+- Configuration/project: STM32CubeMX `.ioc` and Keil MDK/µVision project in each task folder
 - Serial interface: USART1 for ESP8266; USART2 for USB-to-TTL debugging
 - Network: ESP8266 TCP server on port 80; HTTP clients are browser and Node-RED
 

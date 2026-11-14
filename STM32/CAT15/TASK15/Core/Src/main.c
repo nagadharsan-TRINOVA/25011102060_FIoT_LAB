@@ -477,7 +477,7 @@ int main(void)
     Send_AT_Command("AT+CWMODE=1\r\n", 2000);
 
     Debug_Print("\r\nSTEP 3: Connecting to WiFi (wait 20 seconds)\r\n");
-    Send_AT_Command("AT+CWJAP=\"Nagappan\",\"naga@1535\"\r\n", 20000);
+    Send_AT_Command("AT+CWJAP=\"YOUR_WIFI_SSID\",\"YOUR_WIFI_PASSWORD\"\r\n", 20000);
 
     Debug_Print("\r\nSTEP 4: Getting IP address\r\n");
     Send_AT_Command("AT+CIFSR\r\n", 3000);

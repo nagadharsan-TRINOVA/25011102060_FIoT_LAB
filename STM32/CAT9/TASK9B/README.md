@@ -26,7 +26,7 @@ The experiment implements a UART command interface in which lines typed in a PC 
 - **Ground:** common GND shared between the STM32, the ST-Link V2 and the USB-to-TTL adapter
 - **Programming and Debug:** ST-Link V2 on the 4-pin SWD header — 3V3, SWDIO, SWCLK and GND
 
-![Circuit Diagram](circuit.png)
+![Circuit Diagram](circuit.jpeg)
 
 `circuit.png` is the connection sketch for this task; replace it with your own capture if the submission requires one.
 

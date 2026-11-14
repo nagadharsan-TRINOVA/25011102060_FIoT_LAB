@@ -54,12 +54,12 @@ The supplied image is the running AgroSense dashboard, not a circuit schematic:
 5. The Node-RED dashboard displays local readings, OpenWeather reference readings, an environmental readiness score, indicators, source consistency, warnings and smart field advisories.
 
 ### Main project files
-- `Firmware/Core/Src/main.c` — STM32 firmware project entry point
-- `Firmware/Core/Src/bme280.c` — BME280 sensor driver
-- `Firmware/Core/Inc/bme280.h` and `bme280_defs.h` — BME280 driver headers
-- `Firmware/EX_15.ioc` — STM32CubeMX configuration
-- `Firmware/.mxproject` — STM32CubeMX project metadata
-- `Firmware/MDK-ARM/EX_15.uvprojx` — Keil MDK project
+- `Core/Src/main.c` — STM32 firmware project entry point
+- `Core/Src/bme280.c` — BME280 sensor driver
+- `Core/Inc/bme280.h` and `bme280_defs.h` — BME280 driver headers
+- `EX_15.ioc` — STM32CubeMX configuration
+- `.mxproject` — STM32CubeMX project metadata
+- `MDK-ARM/EX_15.uvprojx` — Keil MDK project
 - `NodeRED/flows.json` — Node-RED flow export
 - `Evidence/AgroSense_Dashboard.png` — supplied dashboard demonstration image
 
