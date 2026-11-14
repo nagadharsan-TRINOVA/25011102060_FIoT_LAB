@@ -4,7 +4,7 @@
 CAT14
 
 ### DATE
-To be filled with the actual experiment date.
+27/10/2026
 
 ### NAME OF EXP
 BME280 Sensor Interfacing Using I2C and MQTT Using Custom Built ESP8266 API
